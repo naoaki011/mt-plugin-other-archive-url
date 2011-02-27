@@ -35,13 +35,12 @@ label is a template_label.
 
 > TIP:  
 > 'id' and 'identifier' and 'label' is exclusive.  
-> priority is 'id' &gt; 'identifier' &gt; 'label'.
-
+> priority is 'id' &gt; 'identifier' &gt; 'label'.  
 
 ### map_id
 
     <$MTOtherArchiveURL label="Category Archives of SmartPhone" map_id="30"$>
 
-map_id is a template_map id
-If the template has multiple archive_mappings of same context.
-map_id is assign to the target archive mapping.
+map_id is a template_map id  
+If the template has multiple archive_mappings of same context.  
+map_id is assign to the target archive mapping.  
