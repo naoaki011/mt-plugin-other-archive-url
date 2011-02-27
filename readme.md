@@ -33,8 +33,8 @@ identifier is a template_identifier.
 
 label is a template_label.
 
-> TIP:
-> 'id' and 'identifier' and 'label' is exclusive.
+> TIP:  
+> 'id' and 'identifier' and 'label' is exclusive.  
 > priority is 'id' &gt; 'identifier' &gt; 'label'.
 
 
