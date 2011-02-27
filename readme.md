@@ -4,7 +4,7 @@ A function tag which output archive url of non preffered template map in archive
 
     <ul>
         <MTArchiveList archive_type="Category">
-            <li><a href="<$MTAnotherURL label="Category Archives of SmartPhone"$>"><$MTArchiveTitle$></a></li>
+            <li><a href="<$OtherArchiveURL label="Category Archives of SmartPhone"$>"><$MTArchiveTitle$></a></li>
         </MTArchiveList>
     </ul>
 
@@ -17,25 +17,30 @@ A function tag which output archive url of non preffered template map in archive
 
 ### id
 
-    <$MTAnotherURL id="24"$>
+    <$MTOtherArchiveURL id="24"$>
 
 id is a template_id.
 
 ### identifier
 
-    <$MTAnotherURL identifier="category_listings_for_smartphone"$>
+    <$MTOtherArchiveURL identifier="category_listings_for_smartphone"$>
 
 identifier is a template_identifier.
 
 ### label
 
-    <$MTAnotherURL label="Category Archives of SmartPhone"$>
+    <$MTOtherArchiveURL label="Category Archives of SmartPhone"$>
 
 label is a template_label.
 
+> TIP:
+> 'id' and 'identifier' and 'label' is exclusive.
+> priority is 'id' &gt; 'identifier' &gt; 'label'.
+
+
 ### map_id
 
-    <$MTAnotherURL label="Category Archives of SmartPhone" map_id="30"$>
+    <$MTOtherArchiveURL label="Category Archives of SmartPhone" map_id="30"$>
 
 map_id is a template_map id
 If the template has multiple archive_mappings of same context.
