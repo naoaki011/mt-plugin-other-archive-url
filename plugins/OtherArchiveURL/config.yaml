@@ -1,0 +1,9 @@
+name: Other ArchiveURL
+id: OtherArchiveURL
+author_name: naoaki.onozaki
+author_link: http://www.zelazny.mydns.jp/
+version: 1.0
+
+tags:
+    function:
+        OtherArchiveURL: $OtherArchiveURL::OtherArchiveURL::Tags::_another_url
