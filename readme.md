@@ -1,6 +1,6 @@
-&lt;mt:OtherArchiveURL&gt;
+# &lt;mt:OtherArchiveURL&gt;
 
-# A function tag which output archive url of non preffered template map in archive context.
+A function tag which output archive url of non preffered template map in archive context.
 
     <ul>
         <MTArchiveList archive_type="Category">
