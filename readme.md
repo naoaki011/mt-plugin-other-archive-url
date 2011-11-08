@@ -4,7 +4,7 @@ A function tag which output archive url of non preffered template map in archive
 
     <ul>
         <MTArchiveList archive_type="Category">
-            <li><a href="<$OtherArchiveURL label="Category Archives of SmartPhone"$>"><$MTArchiveTitle$></a></li>
+            <li><a href="<$MTOtherArchiveURL label="Category Archives of SmartPhone"$>"><$MTArchiveTitle$></a></li>
         </MTArchiveList>
     </ul>
 
