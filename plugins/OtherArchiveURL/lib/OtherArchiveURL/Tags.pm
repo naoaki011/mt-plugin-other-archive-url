@@ -8,10 +8,18 @@ sub _another_url {
 	  or return;
 	my $archive_type = $ctx->{current_archive_type} || $ctx->{archive_type} || '';
 	my $time_stamp = $ctx->{current_timestamp} || '';
+	my $map_id = $args->{map_id} || '';
 
 	require MT::FileInfo;
 	require MT::Template;
 	if ($archive_type || $time_stamp) {
+		unless ($archive_type) {
+			my $entry = $ctx->stash('entry');
+			if ($entry) {
+				$archive_type = 'Individual' if ($entry->class eq 'entry');
+				$archive_type = 'Page' if ($entry->class eq 'page');
+			}
+		}
 		my $template_id;
 		# $template_id : TemplateID of parse ArchiveMappings.
 		if ($args->{id}) {
@@ -33,6 +41,17 @@ sub _another_url {
 							});
 			$template_id = $tmpl->id if $tmpl;
 		}
+		elsif ($args->{archive_file_name}) {
+			require MT::TemplateMap;
+			# archive_file_name="%c/%f"
+			my $tmplmap = MT::TemplateMap->load({
+								blog_id => $blog->id,
+								archive_type => $archive_type,
+								file_template => $args->{archive_file_name}
+							});
+			$template_id = $tmplmap->template_id if $tmplmap;
+			$map_id = $tmplmap->id if $tmplmap;
+		}
 		return unless $template_id
 		  or doLog('Cant Load Template');
 
@@ -40,13 +59,13 @@ sub _another_url {
 			#category archive
 			my $category = ($ctx->stash('category') || $ctx->stash('archive_category'))
 			  or return;
-			if ($args->{map_id}) {
+			if ($map_id}) {
 				my @finfos = MT::FileInfo->load({
 								blog_id        => $blog->id,
 								archive_type   => $archive_type,
 								category_id    => $category->id,
 								template_id    => $template_id,
-								templatemap_id => $args->{map_id},
+								templatemap_id => $map_id,
 							});
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
@@ -55,10 +74,10 @@ sub _another_url {
 			}
 			else {
 				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
+								blog_id      => $blog->id,
 								archive_type => $archive_type,
-								category_id => $category->id,
-								template_id => $template_id,
+								category_id  => $category->id,
+								template_id  => $template_id,
 							});
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
@@ -73,9 +92,9 @@ sub _another_url {
 							});
 			if ($pref_tmplmap) {
 				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
+								blog_id      => $blog->id,
 								archive_type => $archive_type,
-								category_id => $category->id,
+								category_id  => $category->id,
 								templatemap_id => $pref_tmplmap->id,
 							}) || return;
 				foreach my $finfo (@finfos) {
@@ -87,14 +106,14 @@ sub _another_url {
 		elsif (($archive_type  =~ /^Category-(Daily|Weekly|Monthly|Yearly)$/) && ($time_stamp)) {
 			my $category = ($ctx->stash('category') || $ctx->stash('archive_category'))
 			  or return;
-			if ($args->{map_id}) {
+			if ($map_id) {
 				my @finfos = MT::FileInfo->load({
 								blog_id        => $blog->id,
 								archive_type   => $archive_type,
 								category_id    => $category->id,
-								startdate    => $time_stamp,
+								startdate      => $time_stamp,
 								template_id    => $template_id,
-								templatemap_id => $args->{map_id},
+								templatemap_id => $map_id,
 							});
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
@@ -103,11 +122,11 @@ sub _another_url {
 			}
 			else {
 				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
+								blog_id      => $blog->id,
 								archive_type => $archive_type,
-								category_id => $category->id,
+								category_id  => $category->id,
 								startdate    => $time_stamp,
-								template_id => $template_id,
+								template_id  => $template_id,
 							});
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
@@ -122,9 +141,9 @@ sub _another_url {
 							});
 			if ($pref_tmplmap) {
 				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
+								blog_id      => $blog->id,
 								archive_type => $archive_type,
-								category_id => $category->id,
+								category_id  => $category->id,
 								startdate    => $time_stamp,
 								templatemap_id => $pref_tmplmap->id,
 							}) || return;
@@ -135,13 +154,13 @@ sub _another_url {
 			}
 		}
 		elsif (($archive_type =~ /^(Daily|Weekly|Monthly|Yearly)$/) && ($time_stamp)) {
-			if ($args->{map_id}) {
+			if ($map_id) {
 				my @finfos = MT::FileInfo->load({
 								blog_id      => $blog->id,
 								archive_type => $archive_type,
 								startdate    => $time_stamp,
 								template_id  => $template_id,
-								templatemap_id => $args->{map_id},
+								templatemap_id => $map_id,
 							});
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
@@ -168,7 +187,7 @@ sub _another_url {
 							});
 			if ($pref_tmplmap) {
 				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
+								blog_id      => $blog->id,
 								archive_type => $archive_type,
 								startdate    => $time_stamp,
 								templatemap_id => $pref_tmplmap->id,
@@ -182,17 +201,14 @@ sub _another_url {
 		else {
 			my $entry = $ctx->stash('entry');
 			if ($entry) {
-				my $entry_type;
-				$archive_type = 'Individual' if ($entry->class eq 'entry');
-				$archive_type = 'Page' if ($entry->class eq 'page');
 				if ($archive_type) {
-					if ($args->{map_id}) {
+					if ($map_id) {
 						my @finfos = MT::FileInfo->load({
-										blog_id     => $blog->id,
+										blog_id      => $blog->id,
 										archive_type => $archive_type,
-										entry_id => $entry->id,
-										template_id => $template_id,
-										templatemap_id => $args->{map_id},
+										entry_id     => $entry->id,
+										template_id  => $template_id,
+										templatemap_id => $map_id,
 									});
 						foreach my $finfo (@finfos) {
 							return $finfo->url;
@@ -201,10 +217,10 @@ sub _another_url {
 					}
 					else {
 						my @finfos = MT::FileInfo->load({
-										blog_id     => $blog->id,
+										blog_id      => $blog->id,
 										archive_type => $archive_type,
-										entry_id => $entry->id,
-										template_id => $template_id,
+										entry_id     => $entry->id,
+										template_id  => $template_id,
 									});
 						foreach my $finfo (@finfos) {
 							return $finfo->url;
@@ -219,9 +235,9 @@ sub _another_url {
 									});
 					if ($pref_tmplmap) {
 						my @finfos = MT::FileInfo->load({
-										blog_id     => $blog->id,
+										blog_id      => $blog->id,
 										archive_type => $archive_type,
-										entry_id => $entry->id,
+										entry_id     => $entry->id,
 										templatemap_id => $pref_tmplmap->id,
 									}) || return;
 						foreach my $finfo (@finfos) {
@@ -239,13 +255,13 @@ sub _another_url {
 				my $author = $ctx->stash('author') || $ctx->stash('user');
 				if ($author) {
 					if ($archive_type eq 'Author') {
-						if ($args->{map_id}) {
+						if ($map_id) {
 							my @finfos = MT::FileInfo->load({
 											blog_id      => $blog->id,
 											archive_type => $archive_type,
 											author_id    => $author->id,
 											template_id  => $template_id,
-											templatemap_id => $args->{map_id},
+											templatemap_id => $map_id,
 										});
 							foreach my $finfo (@finfos) {
 								return $finfo->url;
@@ -272,7 +288,7 @@ sub _another_url {
 										});
 						if ($pref_tmplmap) {
 							my @finfos = MT::FileInfo->load({
-											blog_id     => $blog->id,
+											blog_id      => $blog->id,
 											archive_type => $archive_type,
 											author_id    => $author->id,
 											templatemap_id => $pref_tmplmap->id,
@@ -284,14 +300,14 @@ sub _another_url {
 						}
 					}
 					elsif (($archive_type  =~ /^Author-(Daily|Weekly|Monthly|Yearly)$/) && ($time_stamp)) {
-						if ($args->{map_id}) {
+						if ($map_id) {
 							my @finfos = MT::FileInfo->load({
 											blog_id      => $blog->id,
 											archive_type => $archive_type,
 											author_id    => $author->id,
 											startdate    => $time_stamp,
 											template_id  => $template_id,
-											templatemap_id => $args->{map_id},
+											templatemap_id => $map_id,
 										});
 							foreach my $finfo (@finfos) {
 								return $finfo->url;
@@ -319,7 +335,7 @@ sub _another_url {
 										});
 						if ($pref_tmplmap) {
 							my @finfos = MT::FileInfo->load({
-											blog_id     => $blog->id,
+											blog_id      => $blog->id,
 											archive_type => $archive_type,
 											author_id    => $author->id,
 											startdate    => $time_stamp,

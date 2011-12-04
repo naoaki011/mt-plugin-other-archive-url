@@ -35,9 +35,15 @@ identifier is a template_identifier.
 
 label is a template_label.
 
+### label
+
+    <$MTOtherArchiveURL archive_file_name="%c/%f"$>
+
+archive_file_name is a archive_file_name of archive_mapping.
+
 > TIP:  
-> 'id' and 'identifier' and 'label' is exclusive.  
-> priority is 'id' &gt; 'identifier' &gt; 'label'.  
+> 'id' and 'identifier' and 'label' and 'archive_file_name' is exclusive.  
+> priority is 'id' &gt; 'identifier' &gt; 'label' &gt; 'archive_file_name'.  
 
 ### map_id
 
