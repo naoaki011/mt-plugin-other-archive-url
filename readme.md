@@ -8,6 +8,8 @@ A function tag which output archive url of non preffered template map in archive
         </MTArchiveList>
     </ul>
 
+This plugin support all of Movable Type default archive type.
+
 ## Attributes
 
 - id modifier
