@@ -67,28 +67,16 @@ sub _another_url {
 				}
 			}
 		}
-		elsif ($archive_type eq 'Category-Daily') {
-			doLog('Cant Export OtherArchiveURL for Category-Daily');
-		}
-		elsif ($archive_type eq 'Category-Weekly') {
-			doLog('Cant Export OtherArchiveURL for Category-Weekly');
-		}
-		elsif ($archive_type eq 'Category-Monthly') {
-			doLog('Cant Export OtherArchiveURL for Category-Monthly');
-		}
-		elsif ($archive_type eq 'Category-Yearly') {
-			doLog('Cant Export OtherArchiveURL for Category-Yearly');
-		}
-		elsif ($archive_type eq 'Individual') {
-			#entry
-			my $entry = $ctx->stash('entry')
-			  or return $ctx->_no_entry_error();
+		elsif (($archive_type  =~ /^Category-(Daily|Weekly|Monthly|Yearly)$/) && ($time_stamp)) {
+			my $category = ($ctx->stash('category') || $ctx->stash('archive_category'))
+			  or return;
 			if ($args->{map_id}) {
 				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
-								archive_type => $archive_type,
-								entry_id => $entry->id,
-								template_id => $template_id,
+								blog_id        => $blog->id,
+								archive_type   => $archive_type,
+								category_id    => $category->id,
+								startdate    => $time_stamp,
+								template_id    => $template_id,
 								templatemap_id => $args->{map_id},
 							}) || return;
 				foreach my $finfo (@finfos) {
@@ -100,7 +88,8 @@ sub _another_url {
 				my @finfos = MT::FileInfo->load({
 								blog_id     => $blog->id,
 								archive_type => $archive_type,
-								entry_id => $entry->id,
+								category_id => $category->id,
+								startdate    => $time_stamp,
 								template_id => $template_id,
 							}) || return;
 				foreach my $finfo (@finfos) {
@@ -109,38 +98,7 @@ sub _another_url {
 				}
 			}
 		}
-		elsif ($archive_type eq 'Page') {
-			#page
-			my $entry = $ctx->stash('entry')
-			  or return $ctx->_no_entry_error();
-			if ($args->{map_id}) {
-				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
-								archive_type => $archive_type,
-								entry_id => $entry->id,
-								template_id => $template_id,
-								templatemap_id => $args->{map_id},
-							}) || return;
-				foreach my $finfo (@finfos) {
-					return $finfo->url;
-					last; #if template have multiple archive-mapping in same archive_type. return first only.
-				}
-			}
-			else {
-				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
-								archive_type => $archive_type,
-								entry_id => $entry->id,
-								template_id => $template_id,
-							}) || return;
-				foreach my $finfo (@finfos) {
-					return $finfo->url;
-					last; #if template have multiple archive-mapping in same archive_type. return first only.
-				}
-			}
-		}
-		elsif (($archive_type eq 'Monthly') && ($time_stamp)) {
-			#monthly archive
+		elsif (($archive_type =~ /^(Daily|Weekly|Monthly|Yearly)$/) && ($time_stamp)) {
 			if ($args->{map_id}) {
 				my @finfos = MT::FileInfo->load({
 								blog_id      => $blog->id,
@@ -166,63 +124,114 @@ sub _another_url {
 					last; #if template have multiple archive-mapping in same archive_type. return first only.
 				}
 			}
-		}
-		elsif ($archive_type eq 'Daily') {
-			doLog('Cant Export OtherArchiveURL for DailyArchive');
-		}
-		elsif ($archive_type eq 'Weekly') {
-			doLog('Cant Export OtherArchiveURL for WeeklyArchive');
-		}
-		elsif ($archive_type eq 'Yearly') {
-			doLog('Cant Export OtherArchiveURL for YearlyArchive');
-		}
-		elsif ($ctx->stash('entry')) {
-			my $entry = $ctx->stash('entry');
-			my $entry_type = ($entry->class eq 'entry') ? 'Individual' : 'Page';
-			if ($args->{map_id}) {
-				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
-								archive_type => $entry_type,
-								entry_id => $entry->id,
-								template_id => $template_id,
-								templatemap_id => $args->{map_id},
-							}) || return;
-				foreach my $finfo (@finfos) {
-					return $finfo->url;
-					last; #if template have multiple archive-mapping in same archive_type. return first only.
-				}
-			}
-			else {
-				my @finfos = MT::FileInfo->load({
-								blog_id     => $blog->id,
-								archive_type => $entry_type,
-								entry_id => $entry->id,
-								template_id => $template_id,
-							}) || return;
-				foreach my $finfo (@finfos) {
-					return $finfo->url;
-					last; #if template have multiple archive-mapping in same archive_type. return first only.
-				}
-			}
-		}
-		elsif ($archive_type eq 'Author') {
-			doLog('Cant Export OtherArchiveURL for AuthorArchive');
-		}
-		elsif ($archive_type eq 'Author-Monthly') {
-			doLog('Cant Export OtherArchiveURL for Author-MonthlyArchive');
-		}
-		elsif ($archive_type eq 'Author-Daily') {
-			doLog('Cant Export OtherArchiveURL for Author-DailyArchive');
-		}
-		elsif ($archive_type eq 'Author-Weekly') {
-			doLog('Cant Export OtherArchiveURL for Author-WeeklyArchive');
-		}
-		elsif ($archive_type eq 'Author-Yearly') {
-			doLog('Cant Export OtherArchiveURL for Author-YearlyArchive');
 		}
 		else {
-			# Not Support Other Archive Type yet.
-			doLog('Cant Export OtherArchiveURL for ' . $archive_type . 'Archive');
+			my $entry = $ctx->stash('entry');
+			if ($entry) {
+				my $entry_type;
+				$entry_type = 'Individual' if ($entry->class eq 'entry');
+				$entry_type = 'Page' if ($entry->class eq 'page');
+				if ($entry_type) {
+					if ($args->{map_id}) {
+						my @finfos = MT::FileInfo->load({
+										blog_id     => $blog->id,
+										archive_type => $entry_type,
+										entry_id => $entry->id,
+										template_id => $template_id,
+										templatemap_id => $args->{map_id},
+									}) || return;
+						foreach my $finfo (@finfos) {
+							return $finfo->url;
+							last; #if template have multiple archive-mapping in same archive_type. return first only.
+						}
+					}
+					else {
+						my @finfos = MT::FileInfo->load({
+										blog_id     => $blog->id,
+										archive_type => $entry_type,
+										entry_id => $entry->id,
+										template_id => $template_id,
+									}) || return;
+						foreach my $finfo (@finfos) {
+							return $finfo->url;
+							last; #if template have multiple archive-mapping in same archive_type. return first only.
+						}
+					}
+				}
+				else {
+					# Not Support Other Archive Type yet.
+					doLog('Cant Export OtherArchiveURL for ' . $archive_type . 'Archive');
+				}
+			}
+			else {
+				my $author = $ctx->stash('author') || $ctx->stash('user');
+				if ($author) {
+					if ($archive_type eq 'Author') {
+						if ($args->{map_id}) {
+							my @finfos = MT::FileInfo->load({
+											blog_id      => $blog->id,
+											archive_type => $archive_type,
+											author_id    => $author->id,
+											template_id  => $template_id,
+											templatemap_id => $args->{map_id},
+										}) || return;
+							foreach my $finfo (@finfos) {
+								return $finfo->url;
+								last; #if template have multiple archive-mapping in same archive_type. return first only.
+							}
+						}
+						else {
+							my @finfos = MT::FileInfo->load({
+											blog_id      => $blog->id,
+											archive_type => $archive_type,
+											author_id    => $author->id,
+											template_id  => $template_id,
+										}) || return;
+							foreach my $finfo (@finfos) {
+								return $finfo->url;
+								last; #if template have multiple archive-mapping in same archive_type. return first only.
+							}
+						}
+					}
+					elsif (($archive_type  =~ /^Author-(Daily|Weekly|Monthly|Yearly)$/) && ($time_stamp)) {
+						if ($args->{map_id}) {
+							my @finfos = MT::FileInfo->load({
+											blog_id      => $blog->id,
+											archive_type => $archive_type,
+											author_id    => $author->id,
+											startdate    => $time_stamp,
+											template_id  => $template_id,
+											templatemap_id => $args->{map_id},
+										}) || return;
+							foreach my $finfo (@finfos) {
+								return $finfo->url;
+								last; #if template have multiple archive-mapping in same archive_type. return first only.
+							}
+						}
+						else {
+							my @finfos = MT::FileInfo->load({
+											blog_id      => $blog->id,
+											archive_type => $archive_type,
+											author_id    => $author->id,
+											startdate    => $time_stamp,
+											template_id  => $template_id,
+										}) || return;
+							foreach my $finfo (@finfos) {
+								return $finfo->url;
+								last; #if template have multiple archive-mapping in same archive_type. return first only.
+							}
+						}
+					}
+					else {
+						# Not Support Other Archive Type yet.
+						doLog('Cant Export OtherArchiveURL for ' . $archive_type . 'Archive');
+					}
+				}
+				else {
+					# Not Support Other Archive Type yet.
+					doLog('Cant Export OtherArchiveURL for ' . $archive_type . 'Archive');
+				}
+			}
 		}
 	}
 }
