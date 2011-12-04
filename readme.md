@@ -16,6 +16,7 @@ This plugin support all of Movable Type default archive type.
 - identifier modifier
 - label modifier
 - map_id modifier
+- archive_file_name modifier
 
 ### id
 
@@ -35,7 +36,7 @@ identifier is a template_identifier.
 
 label is a template_label.
 
-### label
+### archive_file_name
 
     <$MTOtherArchiveURL archive_file_name="%c/%f"$>
 
