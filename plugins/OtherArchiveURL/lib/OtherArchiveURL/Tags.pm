@@ -8,7 +8,6 @@ sub _another_url {
 	  or return;
 	my $archive_type = $ctx->{current_archive_type} || $ctx->{archive_type} || '';
 	my $time_stamp = $ctx->{current_timestamp} || '';
-#	my $tag = $ctx->stash('tag');
 
 	require MT::FileInfo;
 	require MT::Template;
@@ -48,7 +47,7 @@ sub _another_url {
 								category_id    => $category->id,
 								template_id    => $template_id,
 								templatemap_id => $args->{map_id},
-							}) || return;
+							});
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
 					last; #if template have multiple archive-mapping in same archive_type. return first only.
@@ -60,6 +59,24 @@ sub _another_url {
 								archive_type => $archive_type,
 								category_id => $category->id,
 								template_id => $template_id,
+							});
+				foreach my $finfo (@finfos) {
+					return $finfo->url;
+					last; #if template have multiple archive-mapping in same archive_type. return first only.
+				}
+			}
+			require MT::TemplateMap;
+			my $pref_tmplmap = MT::TemplateMap->load({
+								blog_id      => $blog->id,
+								archive_type => $archive_type,
+								is_preferred => 1,
+							});
+			if ($pref_tmplmap) {
+				my @finfos = MT::FileInfo->load({
+								blog_id     => $blog->id,
+								archive_type => $archive_type,
+								category_id => $category->id,
+								templatemap_id => $pref_tmplmap->id,
 							}) || return;
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
@@ -78,7 +95,7 @@ sub _another_url {
 								startdate    => $time_stamp,
 								template_id    => $template_id,
 								templatemap_id => $args->{map_id},
-							}) || return;
+							});
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
 					last; #if template have multiple archive-mapping in same archive_type. return first only.
@@ -91,6 +108,25 @@ sub _another_url {
 								category_id => $category->id,
 								startdate    => $time_stamp,
 								template_id => $template_id,
+							});
+				foreach my $finfo (@finfos) {
+					return $finfo->url;
+					last; #if template have multiple archive-mapping in same archive_type. return first only.
+				}
+			}
+			require MT::TemplateMap;
+			my $pref_tmplmap = MT::TemplateMap->load({
+								blog_id      => $blog->id,
+								archive_type => $archive_type,
+								is_preferred => 1,
+							});
+			if ($pref_tmplmap) {
+				my @finfos = MT::FileInfo->load({
+								blog_id     => $blog->id,
+								archive_type => $archive_type,
+								category_id => $category->id,
+								startdate    => $time_stamp,
+								templatemap_id => $pref_tmplmap->id,
 							}) || return;
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
@@ -106,7 +142,7 @@ sub _another_url {
 								startdate    => $time_stamp,
 								template_id  => $template_id,
 								templatemap_id => $args->{map_id},
-							}) || return;
+							});
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
 					last; #if template have multiple archive-mapping in same archive_type. return first only.
@@ -118,6 +154,24 @@ sub _another_url {
 								archive_type => $archive_type,
 								startdate    => $time_stamp,
 								template_id  => $template_id,
+							});
+				foreach my $finfo (@finfos) {
+					return $finfo->url;
+					last; #if template have multiple archive-mapping in same archive_type. return first only.
+				}
+			}
+			require MT::TemplateMap;
+			my $pref_tmplmap = MT::TemplateMap->load({
+								blog_id      => $blog->id,
+								archive_type => $archive_type,
+								is_preferred => 1,
+							});
+			if ($pref_tmplmap) {
+				my @finfos = MT::FileInfo->load({
+								blog_id     => $blog->id,
+								archive_type => $archive_type,
+								startdate    => $time_stamp,
+								templatemap_id => $pref_tmplmap->id,
 							}) || return;
 				foreach my $finfo (@finfos) {
 					return $finfo->url;
@@ -129,17 +183,17 @@ sub _another_url {
 			my $entry = $ctx->stash('entry');
 			if ($entry) {
 				my $entry_type;
-				$entry_type = 'Individual' if ($entry->class eq 'entry');
-				$entry_type = 'Page' if ($entry->class eq 'page');
-				if ($entry_type) {
+				$archive_type = 'Individual' if ($entry->class eq 'entry');
+				$archive_type = 'Page' if ($entry->class eq 'page');
+				if ($archive_type) {
 					if ($args->{map_id}) {
 						my @finfos = MT::FileInfo->load({
 										blog_id     => $blog->id,
-										archive_type => $entry_type,
+										archive_type => $archive_type,
 										entry_id => $entry->id,
 										template_id => $template_id,
 										templatemap_id => $args->{map_id},
-									}) || return;
+									});
 						foreach my $finfo (@finfos) {
 							return $finfo->url;
 							last; #if template have multiple archive-mapping in same archive_type. return first only.
@@ -148,9 +202,27 @@ sub _another_url {
 					else {
 						my @finfos = MT::FileInfo->load({
 										blog_id     => $blog->id,
-										archive_type => $entry_type,
+										archive_type => $archive_type,
 										entry_id => $entry->id,
 										template_id => $template_id,
+									});
+						foreach my $finfo (@finfos) {
+							return $finfo->url;
+							last; #if template have multiple archive-mapping in same archive_type. return first only.
+						}
+					}
+					require MT::TemplateMap;
+					my $pref_tmplmap = MT::TemplateMap->load({
+										blog_id      => $blog->id,
+										archive_type => $archive_type,
+										is_preferred => 1,
+									});
+					if ($pref_tmplmap) {
+						my @finfos = MT::FileInfo->load({
+										blog_id     => $blog->id,
+										archive_type => $archive_type,
+										entry_id => $entry->id,
+										templatemap_id => $pref_tmplmap->id,
 									}) || return;
 						foreach my $finfo (@finfos) {
 							return $finfo->url;
@@ -174,7 +246,7 @@ sub _another_url {
 											author_id    => $author->id,
 											template_id  => $template_id,
 											templatemap_id => $args->{map_id},
-										}) || return;
+										});
 							foreach my $finfo (@finfos) {
 								return $finfo->url;
 								last; #if template have multiple archive-mapping in same archive_type. return first only.
@@ -186,6 +258,24 @@ sub _another_url {
 											archive_type => $archive_type,
 											author_id    => $author->id,
 											template_id  => $template_id,
+										});
+							foreach my $finfo (@finfos) {
+								return $finfo->url;
+								last; #if template have multiple archive-mapping in same archive_type. return first only.
+							}
+						}
+						require MT::TemplateMap;
+						my $pref_tmplmap = MT::TemplateMap->load({
+											blog_id      => $blog->id,
+											archive_type => $archive_type,
+											is_preferred => 1,
+										});
+						if ($pref_tmplmap) {
+							my @finfos = MT::FileInfo->load({
+											blog_id     => $blog->id,
+											archive_type => $archive_type,
+											author_id    => $author->id,
+											templatemap_id => $pref_tmplmap->id,
 										}) || return;
 							foreach my $finfo (@finfos) {
 								return $finfo->url;
@@ -202,7 +292,7 @@ sub _another_url {
 											startdate    => $time_stamp,
 											template_id  => $template_id,
 											templatemap_id => $args->{map_id},
-										}) || return;
+										});
 							foreach my $finfo (@finfos) {
 								return $finfo->url;
 								last; #if template have multiple archive-mapping in same archive_type. return first only.
@@ -215,6 +305,25 @@ sub _another_url {
 											author_id    => $author->id,
 											startdate    => $time_stamp,
 											template_id  => $template_id,
+										});
+							foreach my $finfo (@finfos) {
+								return $finfo->url;
+								last; #if template have multiple archive-mapping in same archive_type. return first only.
+							}
+						}
+						require MT::TemplateMap;
+						my $pref_tmplmap = MT::TemplateMap->load({
+											blog_id      => $blog->id,
+											archive_type => $archive_type,
+											is_preferred => 1,
+										});
+						if ($pref_tmplmap) {
+							my @finfos = MT::FileInfo->load({
+											blog_id     => $blog->id,
+											archive_type => $archive_type,
+											author_id    => $author->id,
+											startdate    => $time_stamp,
+											templatemap_id => $pref_tmplmap->id,
 										}) || return;
 							foreach my $finfo (@finfos) {
 								return $finfo->url;
