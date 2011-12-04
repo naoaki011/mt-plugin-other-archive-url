@@ -15,8 +15,8 @@ This plugin support all of Movable Type default archive type.
 - id modifier
 - identifier modifier
 - label modifier
-- map_id modifier
 - archive_file_name modifier
+- map_id modifier
 
 ### id
 
