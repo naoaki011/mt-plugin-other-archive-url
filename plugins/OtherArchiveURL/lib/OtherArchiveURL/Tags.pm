@@ -23,7 +23,7 @@ sub _another_url {
 								blog_id => $blog->id,
 								identifier => $args->{identifier}
 							});
-			$template_id = $tmpl->id;
+			$template_id = $tmpl->id if $tmpl;
 		}
 		elsif ($args->{label}) {
 			# label="Category Archives"
@@ -31,7 +31,7 @@ sub _another_url {
 								blog_id => $blog->id,
 								name => $args->{label}
 							});
-			$template_id = $tmpl->id;
+			$template_id = $tmpl->id if $tmpl;
 		}
 		return unless $template_id
 		  or doLog('Cant Load Template');
