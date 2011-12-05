@@ -40,7 +40,8 @@ label is a template_label.
 
     <$MTOtherArchiveURL archive_file_name="%c/%f"$>
 
-archive_file_name is a archive_file_name of archive_mapping.
+archive_file_name is an archive_file_name of archive_mapping.
+archive_file_name is enable for concurrent use with other modifiers.
 
 > TIP:  
 > 'id' and 'identifier' and 'label' and 'archive_file_name' is exclusive.  

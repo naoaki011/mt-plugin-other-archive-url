@@ -8,10 +8,12 @@ sub _another_url {
 	  or return;
 	my $archive_type = $ctx->{current_archive_type} || $ctx->{archive_type} || '';
 	my $time_stamp = $ctx->{current_timestamp} || '';
+	my $template_id = $args->{id} || '';
 	my $map_id = $args->{map_id} || '';
 
 	require MT::FileInfo;
 	require MT::Template;
+	require MT::TemplateMap;
 	if ($archive_type || $time_stamp) {
 		unless ($archive_type) {
 			my $entry = $ctx->stash('entry');
@@ -20,12 +22,7 @@ sub _another_url {
 				$archive_type = 'Page' if ($entry->class eq 'page');
 			}
 		}
-		my $template_id;
-		# $template_id : TemplateID of parse ArchiveMappings.
-		if ($args->{id}) {
-			$template_id = $args->{id};
-		}
-		elsif ($args->{identifier}) {
+		if ($args->{identifier}) {
 			# idetifier="archive_listing"
 			my $tmpl = MT::Template->load({
 								blog_id => $blog->id,
@@ -42,7 +39,6 @@ sub _another_url {
 			$template_id = $tmpl->id if $tmpl;
 		}
 		elsif ($args->{archive_file_name}) {
-			require MT::TemplateMap;
 			# archive_file_name="%c/%f"
 			my $tmplmap = MT::TemplateMap->load({
 								blog_id => $blog->id,
@@ -54,12 +50,23 @@ sub _another_url {
 		}
 		return unless $template_id
 		  or doLog('Cant Load Template');
+		unless ($map_id) {
+			if ($args->{archive_file_name}) {
+				my $tmplmap = MT::TemplateMap->load({
+									blog_id => $blog->id,
+									archive_type => $archive_type,
+									template_id => $template_id,
+									file_template => $args->{archive_file_name}
+								});
+				$map_id = $tmplmap->id if $tmplmap;
+			}
+		}
 
 		if ($archive_type eq 'Category') {
 			#category archive
 			my $category = ($ctx->stash('category') || $ctx->stash('archive_category'))
 			  or return;
-			if ($map_id}) {
+			if ($map_id) {
 				my @finfos = MT::FileInfo->load({
 								blog_id        => $blog->id,
 								archive_type   => $archive_type,
@@ -84,7 +91,6 @@ sub _another_url {
 					last; #if template have multiple archive-mapping in same archive_type. return first only.
 				}
 			}
-			require MT::TemplateMap;
 			my $pref_tmplmap = MT::TemplateMap->load({
 								blog_id      => $blog->id,
 								archive_type => $archive_type,
@@ -133,7 +139,6 @@ sub _another_url {
 					last; #if template have multiple archive-mapping in same archive_type. return first only.
 				}
 			}
-			require MT::TemplateMap;
 			my $pref_tmplmap = MT::TemplateMap->load({
 								blog_id      => $blog->id,
 								archive_type => $archive_type,
@@ -179,7 +184,6 @@ sub _another_url {
 					last; #if template have multiple archive-mapping in same archive_type. return first only.
 				}
 			}
-			require MT::TemplateMap;
 			my $pref_tmplmap = MT::TemplateMap->load({
 								blog_id      => $blog->id,
 								archive_type => $archive_type,
@@ -227,7 +231,6 @@ sub _another_url {
 							last; #if template have multiple archive-mapping in same archive_type. return first only.
 						}
 					}
-					require MT::TemplateMap;
 					my $pref_tmplmap = MT::TemplateMap->load({
 										blog_id      => $blog->id,
 										archive_type => $archive_type,
@@ -280,7 +283,6 @@ sub _another_url {
 								last; #if template have multiple archive-mapping in same archive_type. return first only.
 							}
 						}
-						require MT::TemplateMap;
 						my $pref_tmplmap = MT::TemplateMap->load({
 											blog_id      => $blog->id,
 											archive_type => $archive_type,
@@ -327,7 +329,6 @@ sub _another_url {
 								last; #if template have multiple archive-mapping in same archive_type. return first only.
 							}
 						}
-						require MT::TemplateMap;
 						my $pref_tmplmap = MT::TemplateMap->load({
 											blog_id      => $blog->id,
 											archive_type => $archive_type,
