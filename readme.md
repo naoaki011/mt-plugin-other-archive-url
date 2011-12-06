@@ -40,8 +40,8 @@ label is a template_label.
 
     <$MTOtherArchiveURL archive_file_name="%c/%f"$>
 
-archive_file_name is an archive_file_name of archive_mapping. 
-archive_file_name is enable for concurrent use with other modifiers. 
+archive_file_name is an archive_file_name of archive_mapping.  
+archive_file_name is enable for concurrent use with other modifiers.  
 
 > TIP:  
 > 'id' and 'identifier' and 'label' and 'archive_file_name' is exclusive.  
@@ -54,3 +54,9 @@ archive_file_name is enable for concurrent use with other modifiers.
 map_id is a template_map id  
 If the template has multiple archive_mappings of same context.  
 map_id is assign to the target archive mapping.  
+
+
+License
+--------
+
+This plugin has been released under the terms of the Perl Artistic License.  
