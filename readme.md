@@ -8,7 +8,7 @@ A function tag which output archive url of non preffered template map in archive
         </MTArchiveList>
     </ul>
 
-This plugin support all of Movable Type default archive type.
+This plugin support all of Movable Type default archive type. 
 
 ## Attributes
 
@@ -22,26 +22,26 @@ This plugin support all of Movable Type default archive type.
 
     <$MTOtherArchiveURL id="24"$>
 
-id is a template_id.
+id is a template_id. 
 
 ### identifier
 
     <$MTOtherArchiveURL identifier="category_listings_for_smartphone"$>
 
-identifier is a template_identifier.
+identifier is a template_identifier. 
 
 ### label
 
     <$MTOtherArchiveURL label="Category Archives of SmartPhone"$>
 
-label is a template_label.
+label is a template_label. 
 
 ### archive_file_name
 
     <$MTOtherArchiveURL archive_file_name="%c/%f"$>
 
-archive_file_name is an archive_file_name of archive_mapping.
-archive_file_name is enable for concurrent use with other modifiers.
+archive_file_name is an archive_file_name of archive_mapping. 
+archive_file_name is enable for concurrent use with other modifiers. 
 
 > TIP:  
 > 'id' and 'identifier' and 'label' and 'archive_file_name' is exclusive.  
