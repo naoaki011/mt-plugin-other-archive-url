@@ -1,7 +1,9 @@
 name: Other ArchiveURL
 id: OtherArchiveURL
+description: <__trans phrase='Linking to Non-Preferred Archives.'>
 author_name: naoaki.onozaki
 author_link: http://www.zelazny.mydns.jp/
+plugin_link: https://github.com/naoaki011/mt-plugin-other-archive-url
 version: 1.01
 
 tags:
